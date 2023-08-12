@@ -2,6 +2,7 @@ import base64
 import datetime
 import os
 import time
+from tqdm import tqdm
 
 import requests
 
@@ -20,8 +21,7 @@ def get_captcha_to_database_from_req() -> str:
     if len(captcha_code) == 5:
         with open(f"data/captchas_{today}/{captcha_code}.png", "wb") as file:
             file.write(response.content)
-    else:
-        pass
+        return captcha_code
 
 def get_captcha_detection(image_path) -> list:
     """如果抓取的圖片本來就是base64，可以直接使用get_detection_captcha_code()，不用再轉換一次。."""
@@ -30,6 +30,8 @@ def get_captcha_detection(image_path) -> list:
     return captcha_code
 
 if __name__ == "__main__":
-    for i in range(1000):
-        get_captcha_to_database_from_req()
+    pbar = tqdm(range(1000), desc="Processing captchas")
+    for i in pbar:
+        captcha_code = get_captcha_to_database_from_req()
+        pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         time.sleep(1)
