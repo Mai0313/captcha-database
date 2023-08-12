@@ -27,7 +27,7 @@ class CaptchaResolver:
 
     def get_captcha_code(self, captcha_base64: str, upper: bool = True, enable_gpu: bool = False) -> str:
         """This function is used to recognize the captcha code in the image.
-        
+
         Args:
             captcha_base64 (str): The captcha image in base64.
             upper (bool, optional): Whether to convert the result to uppercase. Defaults to True.
@@ -41,7 +41,7 @@ class CaptchaResolver:
         if upper:
             result = result.upper()
         return result
-    
+
     def get_detection_captcha_code(self, captcha_base64: str, output_path: str = "result.jpg", enable_gpu: bool = False) -> str:
         """This function is used to detect the captcha code in the image.
 
@@ -51,7 +51,7 @@ class CaptchaResolver:
             enable_gpu (bool, optional): Whether to use GPU. Defaults to False.
 
         Returns:
-            str: The detected captcha "words" position.        
+            str: The detected captcha "words" position.
         """
         img_bytes = base64.b64decode(captcha_base64)
 
