@@ -1,6 +1,7 @@
 import base64
 import datetime
 import os
+import time
 
 import requests
 
@@ -23,4 +24,6 @@ def get_captcha_to_database_from_req() -> str:
         pass
 
 if __name__ == "__main__":
-    get_captcha_to_database_from_req()
+    for i in range(1000):
+        get_captcha_to_database_from_req()
+        time.sleep(1)
