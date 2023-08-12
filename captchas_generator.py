@@ -1,10 +1,9 @@
 import base64
 import datetime
 import os
-import time
-from tqdm import tqdm
 
 import requests
+from tqdm import tqdm
 
 from captcha_resolver import CaptchaResolver
 
