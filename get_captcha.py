@@ -87,7 +87,7 @@ if __name__ == "__main__":
     push_frequency = cfg.push_frequency
 
     # Select the Website
-    target_website = cfg.eservice711
+    target_website = cfg.etax
 
     website_name = target_website.website_name
     website_url = target_website.website_url

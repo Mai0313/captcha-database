@@ -24,11 +24,11 @@ eservice711:
   version: 2
 newebpay:
   website_name: 藍新金流
-  website_url: https://www.newebpay.com/website/Page/content/transaction_inquiry
-  target_element: img#cp_img
+  website_url: https://www.newebpay.com/main/main/captcha_img
+  target_element: null
   version: 3
 etax:
-  website_name: 財政部電子發票整合服務平台
-  website_url: https://www.einvoice.nat.gov.tw/APMEMBERVAN/GeneralCarrier/generalCarrier!queryInvoice.action
+  website_name: 財政部
+  website_url: https://www.einvoice.nat.gov.tw/home/randNum?id=0.716651019012434
   target_element: null
   version: 3
