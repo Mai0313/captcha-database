@@ -2,6 +2,7 @@ import autorootcwd  # noqa: F401
 
 from captcha_resolver import CaptchaResolver
 
+
 def test_get_image_in_base64():
     resolver = CaptchaResolver()
     image_path = 'tests/test_datasets/classification_image.png'

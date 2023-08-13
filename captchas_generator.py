@@ -35,7 +35,7 @@ if __name__ == "__main__":
         captcha_code = get_captcha_to_database_from_req()
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n % 500 == 0:
-            print("500 images saved, push to github first")
+            print("500 images saved, push to github first")  # noqa: T201
             cmd = "git add . && git commit -m 'update' && git push"
             os.system(cmd)
         n+=1

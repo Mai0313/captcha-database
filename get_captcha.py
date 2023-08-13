@@ -1,13 +1,16 @@
-from playwright.sync_api import sync_playwright
-from captcha_resolver import CaptchaResolver
 import base64
 import datetime
 import os
-import tqdm
-import requests
-import urllib
-from omegaconf import OmegaConf
 import subprocess
+import urllib
+
+import requests
+import tqdm
+from omegaconf import OmegaConf
+from playwright.sync_api import sync_playwright
+
+from captcha_resolver import CaptchaResolver
+
 
 def save_image(output_path, captcha_code, screenshot: bytes):
     with open(f'{output_path}/{captcha_code}.png', 'wb') as f:
@@ -23,7 +26,6 @@ def git_push(website_name):
     subprocess.run(cmd)
 
 def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int, length: int, dtype: list) -> str:
-    print(type)
     if not target_element:
         # 除非可以用網址直接打開圖片，不然不建議用這個版本
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
@@ -122,7 +124,7 @@ if __name__ == "__main__":
     max_length = target_website.max_length
     length = [min_length, max_length]
     dtype = target_website.dtype
-    
+
 
     output_path = f"data/{website_name}_{today}"
     os.makedirs(f"{output_path}", exist_ok=True)
@@ -133,6 +135,6 @@ if __name__ == "__main__":
         captcha_code = get_captcha_to_database(website_url, target_element, output_path, version, length, dtype)
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % push_frequency == 0:
-            print(f"{push_frequency} images saved, push to github first")
+            print(f"{push_frequency} images saved, push to github first")  # noqa: T201
             git_push(website_name)
         n+=1

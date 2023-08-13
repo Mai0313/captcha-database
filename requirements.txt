@@ -1,9 +1,10 @@
 onnxruntime
 playwright
-tqdm 
+tqdm
 omegaconf
 requests
 numpy
 opencv-python
 opencv-python-headless
 pillow==9.5.0
+pre-commit
