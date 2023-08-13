@@ -45,7 +45,13 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             # 直接找圖片的src
             captcha_element = page.wait_for_selector(target_element)
             screenshot = captcha_element.get_attribute('src')
-            base64_screenshot = screenshot.split(',')[1]
+            if screenshot.startswith('data:image'):
+                base64_screenshot = screenshot.split(',')[1]
+            else:
+                base_url = page.url
+                full_url = urllib.parse.urljoin(base_url, screenshot)
+                response = requests.get(full_url)
+                base64_screenshot = base64.b64encode(response.content).decode()
 
 
         # 調用解析驗證碼的函數
@@ -65,15 +71,15 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 if __name__ == "__main__":
     today = datetime.datetime.now().strftime("%Y%m%d")
 
-    # 綠界科技
-    website_name = "綠界科技"
-    website = "https://www.ecpay.com.tw/IntroTransport/Logistics_Search"
-    target_element = "img#code"
+    # # 綠界科技
+    # website_name = "綠界科技"
+    # website = "https://www.ecpay.com.tw/IntroTransport/Logistics_Search"
+    # target_element = "img#code"
 
-    # # 台灣高鐵
-    # website_name = "台灣高鐵"
-    # website = "https://irs.thsrc.com.tw/IMINT/"
-    # target_element = "img#BookingS1Form_homeCaptcha_passCode"
+    # 台灣高鐵
+    website_name = "台灣高鐵"
+    website = "https://irs.thsrc.com.tw/IMINT/"
+    target_element = "img#BookingS1Form_homeCaptcha_passCode"
 
     output_path = f"data/{website_name}_{today}"
     os.makedirs(f"{output_path}", exist_ok=True)
