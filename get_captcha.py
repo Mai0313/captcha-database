@@ -97,7 +97,7 @@ if __name__ == "__main__":
     push_frequency = cfg.push_frequency
 
     # Select the Website
-    target_website = cfg.newebpay
+    target_website = cfg.thsrc
 
     website_name = target_website.website_name
     website_url = target_website.website_url
