@@ -50,7 +50,10 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             else:
                 base_url = page.url
                 full_url = urllib.parse.urljoin(base_url, screenshot)
-                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
+                headers = {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36",
+                    "Referer": base_url
+                    }
                 response = requests.get(url = full_url, headers=headers)
                 base64_screenshot = base64.b64encode(response.content).decode()
 
@@ -77,10 +80,20 @@ if __name__ == "__main__":
     # website = "https://www.ecpay.com.tw/IntroTransport/Logistics_Search"
     # target_element = "img#code"
 
-    # 台灣高鐵
-    website_name = "台灣高鐵"
-    website = "https://irs.thsrc.com.tw/IMINT/"
-    target_element = "img#BookingS1Form_homeCaptcha_passCode"
+    # # 台灣高鐵
+    # website_name = "台灣高鐵"
+    # website = "https://irs.thsrc.com.tw/IMINT/"
+    # target_element = "img#BookingS1Form_homeCaptcha_passCode"
+
+    # # 7-11
+    # website_name = "7-ELEVEN"
+    # website = "https://auth.openpoint.com.tw/SETMemberAuth/Register.html?client_id=c2cpm&v=QAKlbK%2fWYVT%2bPprVONWnt6P8Ft9WFTfS3z3e0qLMc%2f3om1ol96bG1VvapOjSaIkG3XtClvzMBJZhJ%2bHlA%2bxLtCRh%2f78JNthYSH56stXhdR8eCNXL9c1o4azZOvksw%2beba5snZUUtAt2idVFLVZDA2Fo30MehTl0BFcVX%2bqnumNC4m0OriprWiiY7ncgRByinLZIcqoVZwzsnarKAz1Rr6fe0kAYF06d3zXxC%2fG5we8XcTYhRY7rz%2fABNGeeFKSS%2bpNBIk8zcfOrf1%2fAg1FNctD9c3VC9V8Oy5dlH7ntI8Hbqg3w2dpbaDEkNWS%2bX5%2bp4Bdb%2fegk7Ya0l8QK9ZGnKd31idRqV8%2bSYtu5e98HU9wA%3d"
+    # target_element = "img#imgVerify"
+
+    # 賣貨便
+    website_name = "賣貨便"
+    website = "https://eservice.7-11.com.tw/e-tracking/search.aspx"
+    target_element = "img#ImgVCode"
 
     output_path = f"data/{website_name}_{today}"
     os.makedirs(f"{output_path}", exist_ok=True)
@@ -88,7 +101,7 @@ if __name__ == "__main__":
     pbar = tqdm.tqdm(range(1000), desc="Processing captchas")
     n = 0
     for i in pbar:
-        captcha_code = get_captcha_to_database(website, target_element, output_path, 3)
+        captcha_code = get_captcha_to_database(website, target_element, output_path, 2)
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % 500 == 0:
             print("500 images saved, push to github first")
