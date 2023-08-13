@@ -4,6 +4,8 @@ import base64
 import datetime
 import os
 import tqdm
+import requests
+import urllib
 
 
 def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int) -> str:
@@ -63,10 +65,17 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 if __name__ == "__main__":
     today = datetime.datetime.now().strftime("%Y%m%d")
 
+    # 綠界科技
+    website_name = "綠界科技"
     website = "https://www.ecpay.com.tw/IntroTransport/Logistics_Search"
     target_element = "img#code"
-    
-    output_path = f"data/綠界科技_{today}"
+
+    # # 台灣高鐵
+    # website_name = "台灣高鐵"
+    # website = "https://irs.thsrc.com.tw/IMINT/"
+    # target_element = "img#BookingS1Form_homeCaptcha_passCode"
+
+    output_path = f"data/{website_name}_{today}"
     os.makedirs(f"{output_path}", exist_ok=True)
 
     pbar = tqdm.tqdm(range(1000), desc="Processing captchas")
