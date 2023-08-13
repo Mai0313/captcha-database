@@ -1,6 +1,9 @@
 from playwright.sync_api import sync_playwright
 from captcha_resolver import CaptchaResolver
 import base64
+import datetime
+import os
+import tqdm
 
 
 def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int) -> str:
@@ -51,16 +54,27 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             screenshot = base64.b64decode(base64_screenshot)
 
         # bytes -> image
+        today = datetime.datetime.now().strftime("%Y%m%d")
+        output_path = f"{output_path}_{today}"
+        os.makedirs(f"{output_path}", exist_ok=True)
         with open(f'{output_path}/{captcha_code}.png', 'wb') as f:
             f.write(screenshot)
 
         browser.close()
         return captcha_code
-    
 
 if __name__ == "__main__":
     website = "https://www.ecpay.com.tw/IntroTransport/Logistics_Search"
     target_element = "img#code"
-    output_path = '.'
-    captcha_code = get_captcha_to_database(website, target_element, output_path, 2)
-    print(captcha_code)
+    output_path = 'data/綠界科技'
+
+    pbar = tqdm.tqdm(range(1000), desc="Processing captchas")
+    n = 0
+    for i in pbar:
+        captcha_code = get_captcha_to_database(website, target_element, output_path, 3)
+        pbar.set_description(f"Processing captchas (current code: {captcha_code})")
+        if n % 500 == 0:
+            print("500 images saved, push to github first")
+            cmd = "git add . && git commit -m 'update' && git push"
+            os.system(cmd)
+        n+=1
