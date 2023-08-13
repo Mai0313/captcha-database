@@ -50,7 +50,8 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             else:
                 base_url = page.url
                 full_url = urllib.parse.urljoin(base_url, screenshot)
-                response = requests.get(full_url)
+                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
+                response = requests.get(url = full_url, headers=headers)
                 base64_screenshot = base64.b64encode(response.content).decode()
 
 
