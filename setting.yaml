@@ -27,3 +27,8 @@ newebpay:
   website_url: https://www.newebpay.com/website/Page/content/transaction_inquiry
   target_element: img#cp_img
   version: 3
+etax:
+  website_name: 財政部電子發票整合服務平台
+  website_url: https://www.einvoice.nat.gov.tw/APMEMBERVAN/GeneralCarrier/generalCarrier!queryInvoice.action
+  target_element: null
+  version: 3
