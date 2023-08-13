@@ -82,27 +82,25 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 
     # 調用解析驗證碼的函數
     captcha_code = CaptchaResolver().get_captcha_code(base64_screenshot)
+
+    # base64 -> bytes
+    screenshot = base64.b64decode(base64_screenshot)
+    
     min_length, max_length = length
     if not min_length <= len(captcha_code) <= max_length:
         """基本確認，先確認驗證碼長度是否正確，因為很多網站的驗證碼長度都是固定的"""
         return "Length Error, skipping..."
     else:
-        if "english" in dtype:
+        if "english" in dtype and not captcha_code.isascii():
             """表示驗證碼除了數字還有英文字母"""
-            if not captcha_code.isascii():
-                return "Classified Error, skipping..."
+            return "Classified Error, skipping..."
 
-        elif "english" not in dtype:
+        elif "english" not in dtype and not captcha_code.isdigit():
             """表示驗證碼只有數字"""
-            if not captcha_code.isdigit():
-                return "Classified Error, skipping..."
+            return "Classified Error, skipping..."
         else:
-            # base64 -> bytes
-            screenshot = base64.b64decode(base64_screenshot)
-
             # bytes -> image
             save_image(output_path, captcha_code, screenshot)
-
             return captcha_code
 
 if __name__ == "__main__":
