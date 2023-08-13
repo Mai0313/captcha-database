@@ -25,7 +25,7 @@ def get_captcha_to_database_from_req() -> str:
 def get_captcha_detection(image_path) -> list:
     """如果抓取的圖片本來就是base64，可以直接使用get_detection_captcha_code()，不用再轉換一次。."""
     image = CaptchaResolver().get_image_in_base64(image_path)
-    captcha_code = CaptchaResolver().get_detection_captcha_code(image, "data/result.jpg")
+    captcha_code = CaptchaResolver().get_detection_captcha_code(image, "tests/test_datasets/detection_result.png")
     return captcha_code
 
 if __name__ == "__main__":
