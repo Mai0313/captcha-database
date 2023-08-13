@@ -29,8 +29,13 @@ def get_captcha_detection(image_path) -> list:
     return captcha_code
 
 if __name__ == "__main__":
-    pbar = tqdm(range(80000), desc="Processing captchas")
+    pbar = tqdm(range(1000), desc="Processing captchas")
+    n = 0
     for i in pbar:
         captcha_code = get_captcha_to_database_from_req()
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
-        # time.sleep(1)
+        if n % 500 == 0:
+            print("500 images saved, push to github first")
+            cmd = "git add . && git commit -m 'update' && git push"
+            os.system(cmd)
+        n+=1
