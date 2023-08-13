@@ -6,6 +6,7 @@ import os
 import tqdm
 import requests
 import urllib
+from omegaconf import OmegaConf
 
 
 def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int) -> str:
@@ -50,12 +51,12 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             else:
                 base_url = page.url
                 full_url = urllib.parse.urljoin(base_url, screenshot)
-                headers = {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36",
-                    "Referer": base_url
-                    }
+                headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
                 response = requests.get(url = full_url, headers=headers)
                 base64_screenshot = base64.b64encode(response.content).decode()
+        
+        elif version == 4:
+
 
 
         # 調用解析驗證碼的函數
@@ -74,41 +75,27 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 
 if __name__ == "__main__":
     today = datetime.datetime.now().strftime("%Y%m%d")
+    cfg = OmegaConf.load("setting.yaml")
 
-    # # 綠界科技
-    # website_name = "綠界科技"
-    # website_url = "https://www.ecpay.com.tw/IntroTransport/Logistics_Search"
-    # target_element = "img#code"
-    # version = 3
+    image_count = cfg.image_count
+    push_frequency = cfg.push_frequency
 
-    # # 台灣高鐵
-    # website_name = "台灣高鐵"
-    # website_url = "https://irs.thsrc.com.tw/IMINT/"
-    # target_element = "img#BookingS1Form_homeCaptcha_passCode"
-    # version = 3
-
-    # # 7-11
-    # website_name = "7-ELEVEN"
-    # website_url = "https://auth.openpoint.com.tw/SETMemberAuth/Register.html?client_id=c2cpm&v=QAKlbK%2fWYVT%2bPprVONWnt6P8Ft9WFTfS3z3e0qLMc%2f3om1ol96bG1VvapOjSaIkG3XtClvzMBJZhJ%2bHlA%2bxLtCRh%2f78JNthYSH56stXhdR8eCNXL9c1o4azZOvksw%2beba5snZUUtAt2idVFLVZDA2Fo30MehTl0BFcVX%2bqnumNC4m0OriprWiiY7ncgRByinLZIcqoVZwzsnarKAz1Rr6fe0kAYF06d3zXxC%2fG5we8XcTYhRY7rz%2fABNGeeFKSS%2bpNBIk8zcfOrf1%2fAg1FNctD9c3VC9V8Oy5dlH7ntI8Hbqg3w2dpbaDEkNWS%2bX5%2bp4Bdb%2fegk7Ya0l8QK9ZGnKd31idRqV8%2bSYtu5e98HU9wA%3d"
-    # target_element = "img#imgVerify"
-    # version = 3
-
-    # 賣貨便
-    website_name = "賣貨便"
-    website_url = "https://eservice.7-11.com.tw/e-tracking/search.aspx"
-    target_element = "img#ImgVCode"
-    version = 2
+    website_name = cfg.eservice711.website_name
+    website_url = cfg.eservice711.website_url
+    target_element = cfg.eservice711.target_element
+    version = cfg.eservice711.version
+    
 
     output_path = f"data/{website_name}_{today}"
     os.makedirs(f"{output_path}", exist_ok=True)
 
-    pbar = tqdm.tqdm(range(1000), desc="Processing captchas")
+    pbar = tqdm.tqdm(range(image_count), desc="Processing captchas")
     n = 0
     for i in pbar:
         captcha_code = get_captcha_to_database(website_url, target_element, output_path, version)
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
-        if n != 0 and n % 500 == 0:
-            print("500 images saved, push to github first")
+        if n != 0 and n % push_frequency == 0:
+            print(f"{push_frequency} images saved, push to github first")
             cmd = "git add . && git commit -m 'update' && git push"
             os.system(cmd)
         n+=1

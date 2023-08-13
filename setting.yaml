@@ -1,0 +1,24 @@
+target_website: eservice711
+image_count: 1000 # how many images you wanna get
+push_frequency: 200 # how many images you wanna push one time
+ecpay:
+  website_name: 綠界科技
+  website_url: https://www.ecpay.com.tw/IntroTransport/Logistics_Search
+  target_element: img#code
+  version: 3
+thsrc:
+  website_name: 台灣高鐵
+  website_url: https://irs.thsrc.com.tw/IMINT/
+  target_element: img#BookingS1Form_homeCaptcha_passCode
+  version: 3
+seven_eleven:
+  website_name: 7-ELEVEN
+  website_url: https://auth.openpoint.com.tw/SETMemberAuth/Register.html?client_id=c2cpm&v=QAKlbK%2fWYVT%2bPprVONWnt6P8Ft9WFTfS3z3e0qLMc%2f3om1ol96bG1VvapOjSaIkG3XtClvzMBJZhJ%2bHlA%2bxLtCRh%2f78JNthYSH56stXhdR8eCNXL9c1o4azZOvksw%2beba5snZUUtAt2idVFLVZDA2Fo30MehTl0BFcVX%2bqnumNC4m0OriprWiiY7ncgRByin9uS3zTrnF27DhKPLh4usse8CxeXXjTLUSwy6%2fSsuz0KEqV28Lcc1uoScP5mLM30%2bcICSp4mO2pX0rjfq4FkPHrtRW6WN6K%2fsIkye%2bx%2bzUz8bUL1XivspYeLBEd4BvbL9DwgiM7LUY0SmI8waLKEO45L4rZmyAvL7Mhn9U2B8FSA%3d
+  # 這個url比較特別 需要去 https://myship.7-11.com.tw/Home/Main 點選註冊後把網址貼上才能使用，因為有cookie問題
+  target_element: img#imgVerify
+  version: 3
+eservice711:
+  website_name: 賣貨便
+  website_url: https://eservice.7-11.com.tw/e-tracking/search.aspx
+  target_element: img#ImgVCode
+  version: 2
