@@ -33,14 +33,14 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             # 直接截圖
             captcha_element = page.wait_for_selector(target_element)
             screenshot = captcha_element.screenshot()
-            base64_screenshot = base64.b64encode(screenshot).decode()
+            base64_screenshot = base64.b64encode(screenshot).decode("utf-8")
 
         elif version == 2:
             # 找到圖片位置再截圖，跟直接截圖差不多；不穩定，但有時可用
             screenshot_element = page.query_selector(target_element)
             bounding_box = screenshot_element.bounding_box()
             screenshot = page.screenshot(clip=bounding_box)
-            base64_screenshot = base64.b64encode(screenshot).decode()
+            base64_screenshot = base64.b64encode(screenshot).decode("utf-8")
 
         elif version == 3:
             # 直接找圖片的src
@@ -53,18 +53,22 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
                 full_url = urllib.parse.urljoin(base_url, screenshot)
                 headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
                 response = requests.get(url = full_url, headers=headers)
-                base64_screenshot = base64.b64encode(response.content).decode()
+                base64_screenshot = base64.b64encode(response.content).decode("utf-8")
         
         elif version == 4:
-
-
+            # 除非可以用網址直接打開圖片，不然不建議用這個版本
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
+            img_src = "https://www.newebpay.com/main/main/captcha_img"
+            response = requests.get(url = img_src, headers=headers)
+            base64_screenshot = base64.b64encode(response.content).decode("utf-8")
 
         # 調用解析驗證碼的函數
         captcha_code = CaptchaResolver().get_captcha_code(base64_screenshot)
 
         # base64 -> bytes
-        if isinstance(screenshot, str):
-            screenshot = base64.b64decode(base64_screenshot)
+        screenshot = base64.b64decode(base64_screenshot)
+        # if isinstance(screenshot, str):
+        #     screenshot = base64.b64decode(base64_screenshot)
 
         # bytes -> image
         with open(f'{output_path}/{captcha_code}.png', 'wb') as f:
@@ -77,13 +81,17 @@ if __name__ == "__main__":
     today = datetime.datetime.now().strftime("%Y%m%d")
     cfg = OmegaConf.load("setting.yaml")
 
+    # Global setting
     image_count = cfg.image_count
     push_frequency = cfg.push_frequency
 
-    website_name = cfg.eservice711.website_name
-    website_url = cfg.eservice711.website_url
-    target_element = cfg.eservice711.target_element
-    version = cfg.eservice711.version
+    # Select the Website
+    target_website = cfg.eservice711
+
+    website_name = target_website.website_name
+    website_url = target_website.website_url
+    target_element = target_website.target_element
+    version = target_website.version
     
 
     output_path = f"data/{website_name}_{today}"
@@ -96,6 +104,6 @@ if __name__ == "__main__":
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % push_frequency == 0:
             print(f"{push_frequency} images saved, push to github first")
-            cmd = "git add . && git commit -m 'update' && git push"
+            cmd = f"git add data && git commit -m 'update datasets for {website_name}' && git push"
             os.system(cmd)
         n+=1

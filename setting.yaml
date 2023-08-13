@@ -22,3 +22,8 @@ eservice711:
   website_url: https://eservice.7-11.com.tw/e-tracking/search.aspx
   target_element: img#ImgVCode
   version: 2
+newebpay:
+  website_name: 藍新金流
+  website_url: https://www.newebpay.com/website/Page/content/transaction_inquiry
+  target_element: img#cp_img
+  version: 3
