@@ -87,7 +87,7 @@ if __name__ == "__main__":
     push_frequency = cfg.push_frequency
 
     # Select the Website
-    target_website = cfg.etax
+    target_website = cfg.newebpay
 
     website_name = target_website.website_name
     website_url = target_website.website_url
@@ -105,6 +105,6 @@ if __name__ == "__main__":
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % push_frequency == 0:
             print(f"{push_frequency} images saved, push to github first")
-            cmd = f"git add data && git commit -m 'update datasets for {website_name}' && git push"
+            cmd = f"git add data; git commit -m 'update datasets for {website_name}'; git push"
             os.system(cmd)
         n+=1
