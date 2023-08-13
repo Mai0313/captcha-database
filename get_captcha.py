@@ -7,6 +7,7 @@ import tqdm
 import requests
 import urllib
 from omegaconf import OmegaConf
+import subprocess
 
 def save_image(output_path, captcha_code, screenshot: bytes):
     with open(f'{output_path}/{captcha_code}.png', 'wb') as f:
@@ -78,6 +79,15 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 
     return captcha_code
 
+def git_push(website_name):
+    cmd = ["git", "add", "data"]
+    subprocess.run(cmd)
+    commit_message = f"update datasets for {website_name}"
+    cmd = ["git", "commit", "-m", commit_message]
+    subprocess.run(cmd)
+    cmd = ["git", "push"]
+    subprocess.run(cmd)
+
 if __name__ == "__main__":
     today = datetime.datetime.now().strftime("%Y%m%d")
     cfg = OmegaConf.load("setting.yaml")
@@ -105,6 +115,5 @@ if __name__ == "__main__":
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % push_frequency == 0:
             print(f"{push_frequency} images saved, push to github first")
-            cmd = f"git add data; git commit -m 'update datasets for {website_name}'; git push"
-            os.system(cmd)
+            git_push(website_name)
         n+=1
