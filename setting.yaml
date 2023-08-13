@@ -8,7 +8,8 @@ ecpay:
   website_url: https://www.ecpay.com.tw/IntroTransport/Logistics_Search
   target_element: img#code
   version: 3
-  length: 4
+  min_length: 4
+  max_length: 4
   dtype:
     - digit
 
@@ -17,7 +18,8 @@ thsrc:
   website_url: https://irs.thsrc.com.tw/IMINT/
   target_element: img#BookingS1Form_homeCaptcha_passCode
   version: 3
-  length: 5
+  min_length: 4
+  max_length: 5
   dtype:
     - digit
     - english
@@ -28,7 +30,8 @@ seven_eleven:
   # 這個url比較特別 需要去 https://myship.7-11.com.tw/Home/Main 點選註冊後把網址貼上才能使用，因為有cookie問題
   target_element: img#imgVerify
   version: 3
-  length: 5
+  min_length: 5
+  max_length: 5
   dtype:
     - digit
 
@@ -37,7 +40,8 @@ eservice711:
   website_url: https://eservice.7-11.com.tw/e-tracking/search.aspx
   target_element: img#ImgVCode
   version: 2
-  length: 4
+  min_length: 4
+  max_length: 4
   dtype:
     - digit
 
@@ -46,7 +50,8 @@ newebpay:
   website_url: https://www.newebpay.com/main/main/captcha_img
   target_element: null
   version: 3
-  length: 5
+  min_length: 5
+  max_length: 5
   dtype:
     - digit
     - english
@@ -56,6 +61,7 @@ etax:
   website_url: https://www.einvoice.nat.gov.tw/home/randNum?id=0.716651019012434
   target_element: null
   version: 3
-  length: 5
+  min_length: 5
+  max_length: 5
   dtype:
     - digit

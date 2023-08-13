@@ -13,7 +13,16 @@ def save_image(output_path, captcha_code, screenshot: bytes):
     with open(f'{output_path}/{captcha_code}.png', 'wb') as f:
         f.write(screenshot)
 
-def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int, length: int, type: list) -> str:
+def git_push(website_name):
+    cmd = ["git", "add", "data"]
+    subprocess.run(cmd)
+    commit_message = f"update datasets for {website_name}"
+    cmd = ["git", "commit", "-m", commit_message]
+    subprocess.run(cmd)
+    cmd = ["git", "push"]
+    subprocess.run(cmd)
+
+def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int, length: int, dtype: list) -> str:
     print(type)
     if not target_element:
         # 除非可以用網址直接打開圖片，不然不建議用這個版本
@@ -71,23 +80,28 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 
     # 調用解析驗證碼的函數
     captcha_code = CaptchaResolver().get_captcha_code(base64_screenshot)
+    min_length, max_length = length
+    if not min_length <= len(captcha_code) <= max_length:
+        """基本確認，先確認驗證碼長度是否正確，因為很多網站的驗證碼長度都是固定的"""
+        return "Length Error, skipping..."
+    else:
+        if "english" in dtype:
+            """表示驗證碼除了數字還有英文字母"""
+            if not captcha_code.isascii():
+                return "Classified Error, skipping..."
 
-    # base64 -> bytes
-    screenshot = base64.b64decode(base64_screenshot)
+        elif "english" not in dtype:
+            """表示驗證碼只有數字"""
+            if not captcha_code.isdigit():
+                return "Classified Error, skipping..."
+        else:
+            # base64 -> bytes
+            screenshot = base64.b64decode(base64_screenshot)
 
-    # bytes -> image
-    save_image(output_path, captcha_code, screenshot)
+            # bytes -> image
+            save_image(output_path, captcha_code, screenshot)
 
-    return captcha_code
-
-def git_push(website_name):
-    cmd = ["git", "add", "data"]
-    subprocess.run(cmd)
-    commit_message = f"update datasets for {website_name}"
-    cmd = ["git", "commit", "-m", commit_message]
-    subprocess.run(cmd)
-    cmd = ["git", "push"]
-    subprocess.run(cmd)
+            return captcha_code
 
 if __name__ == "__main__":
     today = datetime.datetime.now().strftime("%Y%m%d")
@@ -104,7 +118,9 @@ if __name__ == "__main__":
     website_url = target_website.website_url
     target_element = target_website.target_element
     version = target_website.version
-    length = target_website.length
+    min_length = target_website.min_length
+    max_length = target_website.max_length
+    length = [min_length, max_length]
     dtype = target_website.dtype
     
 
@@ -114,7 +130,7 @@ if __name__ == "__main__":
     pbar = tqdm.tqdm(range(image_count), desc="Processing captchas")
     n = 0
     for i in pbar:
-        captcha_code = get_captcha_to_database(website_url, target_element, output_path, version)
+        captcha_code = get_captcha_to_database(website_url, target_element, output_path, version, length, dtype)
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % push_frequency == 0:
             print(f"{push_frequency} images saved, push to github first")
