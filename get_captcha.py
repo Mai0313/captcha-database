@@ -13,7 +13,8 @@ def save_image(output_path, captcha_code, screenshot: bytes):
     with open(f'{output_path}/{captcha_code}.png', 'wb') as f:
         f.write(screenshot)
 
-def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int, length: int, type: str) -> str:
+def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int, length: int, type: list) -> str:
+    print(type)
     if not target_element:
         # 除非可以用網址直接打開圖片，不然不建議用這個版本
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.107 Safari/537.36"}
@@ -103,6 +104,8 @@ if __name__ == "__main__":
     website_url = target_website.website_url
     target_element = target_website.target_element
     version = target_website.version
+    length = target_website.length
+    dtype = target_website.dtype
     
 
     output_path = f"data/{website_name}_{today}"

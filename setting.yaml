@@ -9,7 +9,7 @@ ecpay:
   target_element: img#code
   version: 3
   length: 4
-  type:
+  dtype:
     - digit
 
 thsrc:
@@ -18,7 +18,7 @@ thsrc:
   target_element: img#BookingS1Form_homeCaptcha_passCode
   version: 3
   length: 5
-  type:
+  dtype:
     - digit
     - english
 
@@ -29,7 +29,7 @@ seven_eleven:
   target_element: img#imgVerify
   version: 3
   length: 5
-  type:
+  dtype:
     - digit
 
 eservice711:
@@ -38,7 +38,7 @@ eservice711:
   target_element: img#ImgVCode
   version: 2
   length: 4
-  type:
+  dtype:
     - digit
 
 newebpay:
@@ -47,7 +47,7 @@ newebpay:
   target_element: null
   version: 3
   length: 5
-  type:
+  dtype:
     - digit
     - english
 
@@ -57,5 +57,5 @@ etax:
   target_element: null
   version: 3
   length: 5
-  type:
+  dtype:
     - digit
