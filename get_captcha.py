@@ -105,7 +105,7 @@ if __name__ == "__main__":
     pbar = tqdm.tqdm(range(1000), desc="Processing captchas")
     n = 0
     for i in pbar:
-        captcha_code = get_captcha_to_database(website, target_element, output_path, version)
+        captcha_code = get_captcha_to_database(website_url, target_element, output_path, version)
         pbar.set_description(f"Processing captchas (current code: {captcha_code})")
         if n != 0 and n % 500 == 0:
             print("500 images saved, push to github first")
