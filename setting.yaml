@@ -1,5 +1,5 @@
 target_website: eservice711
-image_count: 10000 # how many images you wanna get
+image_count: 100000 # how many images you wanna get
 push_frequency: 200 # how many images you wanna push one time
 
 
@@ -63,5 +63,15 @@ etax:
   version: 3
   min_length: 5
   max_length: 5
+  dtype:
+    - digit
+
+cht:
+  website_name: 中華電信
+  website_url: https://member.cht.com.tw/HiReg/jimage.jpg
+  target_element: null
+  version: 3
+  min_length: 4
+  max_length: 6
   dtype:
     - digit
