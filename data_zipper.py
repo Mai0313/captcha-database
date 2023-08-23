@@ -74,7 +74,7 @@ def main():
             get_file_zipped(foldername, max_size_mb)
             pbar.set_postfix_str(f"Folder: {foldername}", refresh=True)
             pbar.update(1)
-            git_push(foldername, f"zipped_data/{foldername}")
+            git_push(foldername, "zipped_data")
 
 if __name__ == "__main__":
     main()
