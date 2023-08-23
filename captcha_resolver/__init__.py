@@ -62,6 +62,6 @@ class CaptchaResolver:
         im = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         for box in poses:
             x1, y1, x2, y2 = box
-            im = cv2.rectangle(im, (x1, y1), (x2, y2), color=(0, 0, 255), thickness=2)
+            im = cv2.rectangle(im, (x1, y1), (x2, y2), color=(0, 0, 255), thickness=1)
         cv2.imwrite(output_path, im)
         return poses

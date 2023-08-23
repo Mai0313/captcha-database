@@ -85,7 +85,7 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
 
     # base64 -> bytes
     screenshot = base64.b64decode(base64_screenshot)
-    
+
     min_length, max_length = length
     if not min_length <= len(captcha_code) <= max_length:
         """基本確認，先確認驗證碼長度是否正確，因為很多網站的驗證碼長度都是固定的"""
