@@ -1,5 +1,6 @@
 import glob
 import os
+import subprocess
 import tarfile
 
 from tqdm import tqdm
@@ -55,6 +56,15 @@ def get_file_zipped(target_folder: str, max_size_mb: int):
 
     tarf.close()
 
+def git_push(message: str, push_target: str):
+    cmd = ["git", "add", f"{push_target}"]
+    subprocess.run(cmd)
+    commit_message = f"update datasets for {message}"
+    cmd = ["git", "commit", "-m", commit_message]
+    subprocess.run(cmd)
+    cmd = ["git", "push"]
+    subprocess.run(cmd)
+
 def main():
     foldernames = list(os.listdir("data"))
     max_size_mb = 90
@@ -64,6 +74,7 @@ def main():
             get_file_zipped(foldername, max_size_mb)
             pbar.set_postfix_str(f"Folder: {foldername}", refresh=True)
             pbar.update(1)
+            git_push(foldername, f"zipped_data/{foldername}")
 
 if __name__ == "__main__":
     main()
