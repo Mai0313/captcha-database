@@ -6,7 +6,7 @@ from tqdm import tqdm
 from tqdm.contrib.concurrent import process_map
 
 
-def get_file_zipped(target_folder: str, max_size_mb: int = 90):
+def get_file_zipped(target_folder: str, max_size_mb: int):
     """This function will zip all files in the target folder; in the meantime, it will close the zip if it is larger than the max_size_mb.
 
     Args:
@@ -57,10 +57,11 @@ def get_file_zipped(target_folder: str, max_size_mb: int = 90):
 
 def main():
     foldernames = list(os.listdir("data"))
+    max_size_mb = 90
     # process_map(get_file_zipped, foldernames, desc="Zipping files")
     with tqdm(total=len(foldernames), desc="Zipping files", position=0, leave=False, ascii=True, colour='green', bar_format='{l_bar}{bar}{r_bar}') as pbar:
         for foldername in foldernames:
-            get_file_zipped(foldername)
+            get_file_zipped(foldername, max_size_mb)
             pbar.set_postfix_str(f"Folder: {foldername}", refresh=True)
             pbar.update(1)
 
