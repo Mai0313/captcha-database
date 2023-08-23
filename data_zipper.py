@@ -42,7 +42,7 @@ def get_file_zipped(target_folder: str, max_size_mb: int):
 
     max_size = max_size_mb * 1024 * 1024
     file_list = glob.glob(f'{source_foldername}/*.png')
-    with tqdm(total=len(file_list), desc="Packing files", position=1, leave=False, ascii=True, colour='white', bar_format='{l_bar}{bar}{r_bar}') as pbar:
+    with tqdm(total=len(file_list), desc="Packing files", position=1, leave=False, ascii="░▒█", colour='green', bar_format='{l_bar}{bar}{r_bar}') as pbar:
         for file_name in file_list:
             tarf.add(file_name, arcname=os.path.basename(file_name))
             current_filesize = os.path.getsize(output_filename)
@@ -69,7 +69,7 @@ def main():
     foldernames = list(os.listdir("data"))
     max_size_mb = 90
     # process_map(get_file_zipped, foldernames, desc="Zipping files")
-    with tqdm(total=len(foldernames), desc="Zipping files", position=0, leave=False, ascii=True, colour='green', bar_format='{l_bar}{bar}{r_bar}') as pbar:
+    with tqdm(total=len(foldernames), desc="Zipping files", position=0, leave=False, ascii="░▒█", colour='green', bar_format='{l_bar}{bar}{r_bar}') as pbar:
         for foldername in foldernames:
             get_file_zipped(foldername, max_size_mb)
             pbar.set_postfix_str(f"Folder: {foldername}", refresh=True)
