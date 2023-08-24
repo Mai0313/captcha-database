@@ -1,5 +1,5 @@
 target_website: eservice711
-image_count: 500000 # how many images you wanna get
+image_count: 10000 # how many images you wanna get
 push_frequency: 200 # how many images you wanna push one time
 
 
