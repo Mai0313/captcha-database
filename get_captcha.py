@@ -5,9 +5,12 @@ import subprocess
 import urllib
 
 import requests
-import tqdm
 from omegaconf import OmegaConf
 from playwright.sync_api import sync_playwright
+from rich.live import Live
+from rich.panel import Panel
+from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+from rich.table import Table
 
 from captcha_resolver import CaptchaResolver
 
@@ -17,13 +20,14 @@ def save_image(output_path, captcha_code, screenshot: bytes):
         f.write(screenshot)
 
 def git_push(website_name):
-    cmd = ["git", "add", "data"]
-    subprocess.run(cmd)
-    commit_message = f"update datasets for {website_name}"
-    cmd = ["git", "commit", "-m", commit_message]
-    subprocess.run(cmd)
-    cmd = ["git", "push"]
-    subprocess.run(cmd)
+    cmd_sequence = [
+        ["git", "add", "data"],
+        ["git", "commit", "-m", f"update datasets for {website_name}"],
+        ["git", "push"]
+    ]
+
+    for cmd in cmd_sequence:
+        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 def get_captcha_to_database(website: str, target_element: str, output_path: str, version: int, length: int, dtype: list) -> str:
     if not target_element:
@@ -103,37 +107,82 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             save_image(output_path, captcha_code, screenshot)
             return captcha_code
 
-if __name__ == "__main__":
+def get_config_details(targets: list):
+    """Get the config details from setting.yaml.
+
+    Args:
+        targets (list): The target website e.g. ["newebpay"]
+
+
+    Returns:
+        image_count (int): The number of images to be generated
+        push_frequency (int): The frequency of pushing to github
+        website_name (str): The name of the website
+        website_url (str): The url of the website
+        target_element (str): The target element of the captcha
+        version (int): The version of the script
+        length (list): The length of the captcha
+        dtype (list): The type of the captcha
+        output_path (str): The output path of the captcha
+    """
     today = datetime.datetime.now().strftime("%Y%m%d")
     cfg = OmegaConf.load("setting.yaml")
 
-    # Global setting
-    image_count = cfg.image_count
+    image_count = cfg.image_count + 1  # Python range() starts from 0, so it needs to add 1
     push_frequency = cfg.push_frequency
 
-    # Select the Website
-    my_selection_in_str = "newebpay"
-    target_website = getattr(cfg, my_selection_in_str)
+    for target in targets:
+        target_website = getattr(cfg, target)
 
-    website_name = target_website.website_name
-    website_url = target_website.website_url
-    target_element = target_website.target_element
-    version = target_website.version
-    min_length = target_website.min_length
-    max_length = target_website.max_length
-    length = [min_length, max_length]
-    dtype = target_website.dtype
+        website_name = target_website.website_name
+        website_url = target_website.website_url
+        target_element = target_website.target_element
+        version = target_website.version
+        min_length = target_website.min_length
+        max_length = target_website.max_length
+        length = [min_length, max_length]
+        dtype = target_website.dtype
+        output_path = f"data/{website_name}_{today}"
+        os.makedirs(f"{output_path}", exist_ok=True)
+        return image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path
 
+def get_progress_layout():
+    job_progress = Progress(
+        "{task.description}",
+        SpinnerColumn(),
+        BarColumn(),
+        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+    )
+    return job_progress
 
-    output_path = f"data/{website_name}_{today}"
-    os.makedirs(f"{output_path}", exist_ok=True)
+def main():
+    target = ["newebpay"]
+    image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details(target)
+    job_progress = get_progress_layout()
+    job_captcha = job_progress.add_task("[green]Processing Captcha Code", total=image_count)
+    job_push = job_progress.add_task("[magenta]How Many Left before Push", total=push_frequency)
+    total = sum(task.total for task in job_progress.tasks)
+    overall_progress = Progress()
+    overall_task = overall_progress.add_task("Jobs Overall", total=int(total))
+    progress_table = Table.grid()
+    progress_table.add_row(
+        Panel.fit(overall_progress, title="Overall Progress", border_style="green", padding=(2, 2)),
+        Panel.fit(job_progress, title="[b]Jobs", border_style="red", padding=(1, 2))
+    )
+    with Live(progress_table, refresh_per_second=10):
+        n = 0
+        for i in range(image_count):
+            captcha_code = get_captcha_to_database(website_url, target_element, output_path, version, length, dtype)
+            job_progress.update(job_captcha, advance=1)
+            if n != 0 and n % push_frequency == 0:
+                git_push(website_name)
+                job_progress.reset(job_push) # 重置進度條
+            else:
+                job_progress.update(job_push, advance=1) # 更新進度條
+            n += 1
 
-    pbar = tqdm.tqdm(range(image_count), desc="Processing captchas")
-    n = 0
-    for i in pbar:
-        captcha_code = get_captcha_to_database(website_url, target_element, output_path, version, length, dtype)
-        pbar.set_description(f"Processing captchas (current code: {captcha_code})")
-        if n != 0 and n % push_frequency == 0:
-            print(f"{push_frequency} images saved, push to github first")  # noqa: T201
-            git_push(website_name)
-        n+=1
+            completed = sum(task.completed for task in job_progress.tasks)
+            overall_progress.update(overall_task, completed=completed)
+
+if __name__ == "__main__":
+    main()
