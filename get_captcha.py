@@ -107,7 +107,7 @@ def get_captcha_to_database(website: str, target_element: str, output_path: str,
             save_image(output_path, captcha_code, screenshot)
             return captcha_code
 
-def get_config_details(targets: list):
+def get_config_details():
     """Get the config details from setting.yaml.
 
     Args:
@@ -130,6 +130,7 @@ def get_config_details(targets: list):
 
     image_count = cfg.image_count + 1  # Python range() starts from 0, so it needs to add 1
     push_frequency = cfg.push_frequency
+    targets = cfg.target_websites
 
     for target in targets:
         target_website = getattr(cfg, target)
@@ -144,7 +145,7 @@ def get_config_details(targets: list):
         dtype = target_website.dtype
         output_path = f"data/{website_name}_{today}"
         os.makedirs(f"{output_path}", exist_ok=True)
-        return image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path
+        return target, image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path
 
 def get_progress_layout():
     job_progress = Progress(
@@ -157,7 +158,7 @@ def get_progress_layout():
 
 # def main():
 #     target = ["newebpay"]
-#     image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details(target)
+#     image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details()
 
 #     # 定義兩個進度條，注意 job_push 的 total 設置
 #     with Progress() as progress:
@@ -174,17 +175,16 @@ def get_progress_layout():
 #             n += 1
 
 def main():
-    target = ["newebpay"]
-    image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details(target)
+    target, image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details()
     job_progress = get_progress_layout()
     job_captcha = job_progress.add_task("[green]Processing Captcha Code", total=image_count)
-    job_push = job_progress.add_task("[magenta]How Many Left before Push", total= image_count // push_frequency)
+    job_push = job_progress.add_task("[magenta]How Many Left before Push", total=push_frequency)
     total = sum(task.total for task in job_progress.tasks)
     overall_progress = Progress()
     overall_task = overall_progress.add_task("Jobs Overall", total=int(total))
     progress_table = Table.grid()
     progress_table.add_row(
-        Panel.fit(overall_progress, title="Overall Progress", border_style="green", padding=(2, 2)),
+        Panel.fit(overall_progress, title=f"[b]Processing {target} for {image_count} images", border_style="green", padding=(2, 2)),
         Panel.fit(job_progress, title="[b]Jobs", border_style="red", padding=(1, 2))
     )
     with Live(progress_table, refresh_per_second=10):
@@ -192,9 +192,10 @@ def main():
         for i in range(image_count):
             captcha_code = get_captcha_to_database(website_url, target_element, output_path, version, length, dtype)
             job_progress.update(job_captcha, advance=1)
+            job_progress.update(job_push, advance=1)
             if n != 0 and n % push_frequency == 0:
                 git_push(website_name)
-                job_progress.update(job_push, advance=1)
+                job_progress.reset(job_push)
             n += 1
             
             completed = sum(task.completed for task in job_progress.tasks)
