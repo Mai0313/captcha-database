@@ -176,11 +176,9 @@ def main():
             job_progress.update(job_captcha, advance=1)
             if n != 0 and n % push_frequency == 0:
                 git_push(website_name)
-                job_progress.reset(job_push) # 重置進度條
-            else:
-                job_progress.update(job_push, advance=1) # 更新進度條
+                job_progress.update(job_push, advance=1)
             n += 1
-
+            
             completed = sum(task.completed for task in job_progress.tasks)
             overall_progress.update(overall_task, completed=completed)
 
