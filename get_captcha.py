@@ -197,7 +197,7 @@ def main():
                 git_push(website_name)
                 job_progress.reset(job_push)
             n += 1
-            
+
             completed = sum(task.completed for task in job_progress.tasks)
             overall_progress.update(overall_task, completed=completed)
 
