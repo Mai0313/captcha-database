@@ -1,6 +1,6 @@
 target_website: eservice711
-image_count: 10000 # how many images you wanna get
-push_frequency: 200 # how many images you wanna push one time
+image_count: 100 # how many images you wanna get
+push_frequency: 20 # how many images you wanna push one time
 
 
 ecpay:

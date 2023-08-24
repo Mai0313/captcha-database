@@ -155,12 +155,30 @@ def get_progress_layout():
     )
     return job_progress
 
+# def main():
+#     target = ["newebpay"]
+#     image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details(target)
+
+#     # 定義兩個進度條，注意 job_push 的 total 設置
+#     with Progress() as progress:
+#         job_captcha = progress.add_task("[green]Processing Captcha Code", total=image_count)
+#         job_push = progress.add_task("[magenta]How Many Left before Push", total=image_count // push_frequency)
+
+#         n = 0
+#         for i in range(image_count):
+#             captcha_code = get_captcha_to_database(website_url, target_element, output_path, version, length, dtype)
+#             progress.update(job_captcha, advance=1)
+#             if n != 0 and n % push_frequency == 0:
+#                 git_push(website_name)
+#                 progress.update(job_push, advance=1)  # 每次推送後更新 job_push 進度條
+#             n += 1
+
 def main():
     target = ["newebpay"]
     image_count, push_frequency, website_name, website_url, target_element, version, length, dtype, output_path = get_config_details(target)
     job_progress = get_progress_layout()
     job_captcha = job_progress.add_task("[green]Processing Captcha Code", total=image_count)
-    job_push = job_progress.add_task("[magenta]How Many Left before Push", total=push_frequency)
+    job_push = job_progress.add_task("[magenta]How Many Left before Push", total= image_count // push_frequency)
     total = sum(task.total for task in job_progress.tasks)
     overall_progress = Progress()
     overall_task = overall_progress.add_task("Jobs Overall", total=int(total))
